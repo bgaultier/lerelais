@@ -10,7 +10,7 @@ Installation
 ------------
 
 * Fork this project
-* * Move it to your Arduino sketchbook
+* Move it to your Arduino sketchbook
 * Open your favorite Arduino IDE
 * Modify `myapikey` line 29 in `lerelais.ino`, choose a random alphanumeric string. For instance:
 
