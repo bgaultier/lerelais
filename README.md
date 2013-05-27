@@ -1,7 +1,7 @@
 lerelais
 ========
 
-This is a connected Arduino mounted by a relay shield which can swith on or off the appliances remotely.
+This is a connected Arduino mounted by a relay shield which can swith on or off appliances remotely.
 This project is powered by an [Arduino Ethernet](http://arduino.cc/en/Main/ArduinoBoardEthernet) and a [Relay shield](http://www.seeedstudio.com/depot/relay-shield-p-693.html).
 
 ![lerelais](https://raw.github.com/bgaultier/lerelais/master/lerelais.png)
