@@ -9,7 +9,7 @@
  
  created 18 Dec 2009
  by David A. Mellis
- modified 20 May 2013
+ modified 2 Aug 2013
  by Baptiste Gaultier
  
  */
@@ -18,15 +18,16 @@
 #include <Ethernet.h>
 #include <avr/wdt.h>
 
-const int turnOnPin = 5;        // this pin number is connected to a relay turning on a remote plug
-const int turnOffPin = 4;       // this pin number is connected to a relay turning off a remote plug
+int currentState6 = LOW;        // state used to toggle the relay 6
+int currentState7 = LOW;        // state used to toggle the relay 6
+
 
 String currentLine = "";        // string to hold the text from client
 String query = "";              // string to hold the URL
 String action = "";             // string to hold the action (on or off)
 boolean readingQuery = false;   // if you're currently reading the query
 
-String myapikey = "pif";
+String myapikey = "h3xk518i";
 
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
@@ -44,8 +45,11 @@ void setup() {
   query.reserve(32);
   
   // initialize the digital pins as outputs:
-  pinMode(turnOnPin, OUTPUT);  
-  pinMode(turnOffPin, OUTPUT);
+  pinMode(4, OUTPUT);  
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  
   // open serial communications and wait for port to open:
   Serial.begin(9600);
   
@@ -57,7 +61,7 @@ void setup() {
     Ethernet.begin(mac, ip);
   }
   server.begin();
-  Serial.print("lerelais v0.1 starting at ");
+  Serial.print("lerelais v0.2 starting at ");
   Serial.print(Ethernet.localIP());
   Serial.println("...");
   
@@ -101,18 +105,24 @@ void loop() {
             client.println(F("    <link rel=\"apple-touch-icon-precomposed\" sizes=\"114x114\" href=\"http://api.baptistegaultier.fr/on114.png\" />"));
             client.println(F("    <link rel=\"apple-touch-icon-precomposed\" sizes=\"144x144\" href=\"http://api.baptistegaultier.fr/on144.png\" />"));
           }
-          else {
+          else if(action.equals("off")) {
             client.println(F("    <link rel=\"apple-touch-icon-precomposed\" href=\"http://api.baptistegaultier.fr/off57.png\" />"));
             client.println(F("    <link rel=\"apple-touch-icon-precomposed\" sizes=\"72x72\" href=\"http://api.baptistegaultier.fr/off72.png\" />"));
             client.println(F("    <link rel=\"apple-touch-icon-precomposed\" sizes=\"114x114\" href=\"http://api.baptistegaultier.fr/off114.png\" />"));
             client.println(F("    <link rel=\"apple-touch-icon-precomposed\" sizes=\"144x144\" href=\"http://api.baptistegaultier.fr/off144.png\" />"));
+          }
+          else {
+            client.println(F("    <link rel=\"apple-touch-icon-precomposed\" href=\"http://api.baptistegaultier.fr/toggle57.png\" />"));
+            client.println(F("    <link rel=\"apple-touch-icon-precomposed\" sizes=\"72x72\" href=\"http://api.baptistegaultier.fr/toggle72.png\" />"));
+            client.println(F("    <link rel=\"apple-touch-icon-precomposed\" sizes=\"114x114\" href=\"http://api.baptistegaultier.fr/toggle114.png\" />"));
+            client.println(F("    <link rel=\"apple-touch-icon-precomposed\" sizes=\"144x144\" href=\"http://api.baptistegaultier.fr/toggle144.png\" />"));
           }
           client.println(F("    <link rel=\"apple-touch-startup-image\" href=\"http://api.baptistegaultier.fr/lerelais.png\" />"));
           client.println(F("    <meta name =\"viewport\" content =\"user-scalable=no, width=device-width\">"));
           client.println(F("    <title>lerelais</title>"));
           client.println(F("  </head>"));
           client.println(F("  <body>"));
-          client.println(F("    <img src=\"http://api.baptistegaultier.fr/lerelais.png\" alt=\"lerelais v0.1\" />"));
+          client.println(F("    <img src=\"http://api.baptistegaultier.fr/lerelais.png\" alt=\"lerelais v0.2\" />"));
           client.println(F("  </body>"));
           client.println(F("</html>"));
           break;
@@ -151,6 +161,10 @@ void loop() {
               turnOn();
             if(action.equals("off") && apikey.equals(myapikey))
               turnOff();
+            if(action.equals("toggle1") && apikey.equals(myapikey))
+              toggleRelay6();
+            if(action.equals("toggle2") && apikey.equals(myapikey))
+              toggleRelay7();
           }
         }
       }
@@ -164,15 +178,37 @@ void loop() {
 }
 
 void turnOn() {
-  digitalWrite(turnOnPin, HIGH);   // send an on order
+  digitalWrite(5, HIGH);   // send an on order
   delay(1000);                     // during a second
-  digitalWrite(turnOnPin, LOW);
+  digitalWrite(5, LOW);
 }
 
 void turnOff() {
-  digitalWrite(turnOffPin, HIGH);   // send an off order
+  digitalWrite(4, HIGH);   // send an off order
   delay(1000);                     // during a second
-  digitalWrite(turnOffPin, LOW);
-}   
+  digitalWrite(4, LOW);
+}
+
+void toggleRelay6() {
+  if(currentState6 == HIGH) {
+    currentState6 = LOW;
+    digitalWrite(6, currentState6);
+  }
+  else {
+    currentState6 = HIGH;
+    digitalWrite(6, currentState6);
+  }
+}
+
+void toggleRelay7() {
+  if(currentState7 == HIGH) {
+    currentState7 = LOW;
+    digitalWrite(7, currentState7);
+  }
+  else {
+    currentState7 = HIGH;
+    digitalWrite(7, currentState7);
+  }
+}
 
 
